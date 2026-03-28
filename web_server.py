@@ -42,11 +42,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             super().do_GET()
 
 if __name__ == '__main__':
+    web_dir = Path(__file__).parent
+    os.chdir(web_dir)
+    print(f"🏛️  三省六部看板运行中...")
+    print(f"📊 访问地址：http://localhost:{PORT}")
+    print(f"📁 Web 目录：{web_dir}")
+    print(f"📁 数据目录：{DATA_DIR}")
+    print(f"按 Ctrl+C 停止服务")
+    
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"🏛️  三省六部看板运行中...")
-        print(f"📊 访问地址：http://localhost:{PORT}")
-        print(f"📁 数据目录：{DATA_DIR}")
-        print(f"按 Ctrl+C 停止服务")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
