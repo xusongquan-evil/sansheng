@@ -27,7 +27,7 @@ from pathlib import Path
 
 # 数据文件路径
 BASE_DIR = Path(__file__).parent.parent
-TASKS_FILE = BASE_DIR / "data" / "tasks.json"
+TASKS_FILE = BASE_DIR / "web" / "data" / "tasks.json"
 
 # 状态 - 部门映射
 STATE_ORG_MAP = {

@@ -17,7 +17,7 @@ let currentFilter = 'all';
 // 加载任务
 async function loadTasks() {
   try {
-    const response = await fetch('/api/tasks.json?t=' + Date.now());
+    const response = await fetch('data/tasks.json?t=' + Date.now());
     if (!response.ok) throw new Error('HTTP ' + response.status);
     allTasks = await response.json();
     allTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

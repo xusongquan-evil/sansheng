@@ -21,6 +21,18 @@ PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 7850
 # 数据文件路径
 TASKS_FILE = Path("/root/.openclaw/workspace-taizi/data/tasks.json")
 
+# 添加软链接（如果不存在）
+WEB_DATA_DIR = Path(__file__).parent / "web" / "data"
+WEB_DATA_DIR.mkdir(parents=True, exist_ok=True)
+WEB_DATA_LINK = WEB_DATA_DIR / "tasks.json"
+if not WEB_DATA_LINK.exists():
+    try:
+        import os
+        os.symlink(TASKS_FILE, WEB_DATA_LINK)
+        print(f"✅ 创建数据链接：{WEB_DATA_LINK} -> {TASKS_FILE}")
+    except FileExistsError:
+        pass
+
 class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         web_dir = Path(__file__).parent / "web"
