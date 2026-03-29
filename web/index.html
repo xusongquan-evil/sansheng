@@ -142,7 +142,7 @@
       container.innerHTML = '<div class="col-span-full text-center py-4 text-gray-500">加载中...</div>';
       
       try {
-        const response = await fetch('/api/agents/list?t=' + Date.now());
+        const response = await fetch('http://10.1.0.9:7851/api/agents/list?t=' + Date.now());
         const data = await response.json();
         
         if (data.agents && data.agents.length > 0) {
@@ -183,7 +183,7 @@
       container.innerHTML = '<div class="text-center py-4 text-gray-500">加载中...</div>';
       
       try {
-        const response = await fetch('/api/system/status?t=' + Date.now());
+        const response = await fetch('http://10.1.0.9:7851/api/system/status?t=' + Date.now());
         const data = await response.json();
         
         let html = '<div class="grid md:grid-cols-2 gap-6">';

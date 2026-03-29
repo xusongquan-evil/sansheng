@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-三省六部看板 Web 服务器 - 带数据代理
+三省六部看板 Web 服务器 - 带数据代理和 API
 
 用法：
   python3 web_server_proxy.py [端口]
@@ -15,11 +15,17 @@ import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
+import subprocess
+import urllib.request
+import urllib.parse
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 7850
 
 # 数据文件路径
 TASKS_FILE = Path("/root/.openclaw/workspace-taizi/data/tasks.json")
+
+# API 服务端口
+API_PORT = 7851
 
 # 添加软链接（如果不存在）
 WEB_DATA_DIR = Path(__file__).parent / "web" / "data"
@@ -56,6 +62,18 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": "数据文件不存在"}).encode())
         
+        # 代理 /api/system/status 请求
+        elif parsed.path.startswith('/api/system/status'):
+            self.proxy_api_request(f'http://localhost:{API_PORT}/api/system/status')
+        
+        # 代理 /api/agents/list 请求
+        elif parsed.path.startswith('/api/agents/list'):
+            self.proxy_api_request(f'http://localhost:{API_PORT}/api/agents/list')
+        
+        # 代理 /api/sessions/stats 请求
+        elif parsed.path.startswith('/api/sessions/stats'):
+            self.proxy_api_request(f'http://localhost:{API_PORT}/api/sessions/stats')
+        
         # 重定向根路径到 index.html
         elif parsed.path == '/':
             self.send_response(302)
@@ -64,6 +82,23 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
         
         else:
             super().do_GET()
+    
+    def proxy_api_request(self, target_url):
+        """代理 API 请求到 system_status.py"""
+        try:
+            response = urllib.request.urlopen(target_url, timeout=10)
+            data = response.read()
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
 
 if __name__ == '__main__':
     socketserver.TCPServer.allow_reuse_address = True
@@ -73,6 +108,7 @@ if __name__ == '__main__':
         print(f"📊 访问地址：http://localhost:{PORT}")
         print(f"📁 Web 目录：{Path(__file__).parent / 'web'}")
         print(f"📁 数据文件：{TASKS_FILE}")
+        print(f"🔌 API 代理端口：{API_PORT}")
         print(f"按 Ctrl+C 停止服务")
         try:
             httpd.serve_forever()
