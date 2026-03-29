@@ -161,9 +161,20 @@ capabilities:
     
   # 服务监控能力
   service_monitor:
-    enabled: false
+    enabled: true
     description: "系统服务状态监控与告警"
+    script: "capabilities/monitor.py"
+    check_interval_minutes: 30
     
+  # 告警通知能力
+  alert:
+    enabled: true
+    description: "Telegram 告警推送"
+    script: "capabilities/alert.py"
+    telegram:
+      # 从环境变量读取 TELEGRAM_BOT_TOKEN 和 TELEGRAM_CHAT_ID
+      use_env: true
+      
   # 日志轮转能力
   log_rotation:
     enabled: true
