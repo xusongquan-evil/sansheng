@@ -1,0 +1,196 @@
+# 三省六部系统配置
+# 最后更新：2026-03-29
+
+# ============================================
+# 🏛️ 系统基础配置
+# ============================================
+
+system:
+  name: "三省六部任务管理系统"
+  version: "1.0.0"
+  workspace: "/root/.openclaw/workspace"
+  data_dir: "/root/.openclaw/workspace-taizi/data"
+  tasks_file: "tasks.json"
+  
+# ============================================
+# 📊 任务看板配置
+# ============================================
+
+kanban:
+  enabled: true
+  service: "sansheng-web.service"
+  host: "10.1.0.9"
+  port: 7850
+  url: "http://10.1.0.9:7850"
+  data_path: "/root/.openclaw/workspace/sansheng-github/web/data/tasks.json"
+
+# ============================================
+# 🗂️ 各部门配置
+# ============================================
+
+departments:
+  # 太子 - 任务分拣
+  taizi:
+    enabled: true
+    role: "任务分拣与传达"
+    next_department: "zhongshu"
+    
+  # 中书省 - 方案规划
+  zhongshu:
+    enabled: true
+    role: "方案设计与规划"
+    next_department: "menxia"
+    tools:
+      planning: "task_update.py"
+      
+  # 门下省 - 审议封驳
+  menxia:
+    enabled: true
+    role: "审议与封驳"
+    next_department: "shangshu"
+    review_threshold: "high_risk"  # 高风险任务必须审议
+    
+  # 尚书省 - 执行与回奏
+  shangshu:
+    enabled: true
+    role: "任务执行与回奏"
+    next_department: "done"
+    exec_tools:
+      - git
+      - iptables
+      - systemctl
+      - python3
+
+# ============================================
+# 🔧 工具链配置
+# ============================================
+
+tools:
+  # Git 配置
+  git:
+    enabled: true
+    repo_path: "/root/.openclaw/workspace/sansheng-github"
+    remote: "origin"
+    remote_url: "git@github.com:xusongquan-evil/sansheng.git"
+    branch: "main"
+    auto_commit: true
+    auto_push: true
+    
+  # 防火墙配置
+  firewall:
+    enabled: true
+    backend: "iptables"
+    config_file: "/etc/iptables/rules.v4"
+    auto_backup: true
+    
+  # 服务管理
+  service:
+    enabled: true
+    backend: "systemd"
+    kanban_service: "sansheng-web.service"
+
+# ============================================
+# 🔐 安全配置
+# ============================================
+
+security:
+  # 安全模式：执行前确认
+  safe_mode: false
+  
+  # 高风险操作需要确认
+  high_risk_operations:
+    - "rm"
+    - "iptables -F"
+    - "systemctl stop"
+    - "DROP"
+    
+  # 会话管理
+  session:
+    max_subagents: 10
+    cleanup_timeout: true
+    cleanup_aborted: true
+    cleanup_log: "memory/session-cleanup-log.md"
+
+# ============================================
+# 📝 日志配置
+# ============================================
+
+logging:
+  level: "info"  # debug | info | warning | error
+  format: "json"  # json | text
+  output: "/var/log/sansheng/"
+  rotation:
+    enabled: true
+    max_size: "10MB"
+    keep_days: 7
+
+# ============================================
+# 🔄 自动化配置
+# ============================================
+
+automation:
+  # 心跳检查
+  heartbeat:
+    enabled: true
+    interval_minutes: 30
+    checks:
+      - email
+      - calendar
+      - session_cleanup
+      
+  # 任务完成后自动同步 GitHub
+  github_sync_on_complete: true
+  
+  # 看板数据自动刷新（秒）
+  kanban_refresh_interval: 30
+
+# ============================================
+# 📦 扩展能力（Capabilities）
+# ============================================
+
+capabilities:
+  # GitHub 同步能力
+  github_sync:
+    enabled: true
+    description: "自动同步三省六部代码到 GitHub"
+    
+  # 防火墙管理能力
+  firewall_manage:
+    enabled: true
+    description: "iptables 防火墙配置与管理"
+    
+  # 服务监控能力
+  service_monitor:
+    enabled: false
+    description: "系统服务状态监控与告警"
+    
+  # 日志轮转能力
+  log_rotation:
+    enabled: true
+    description: "自动日志轮转与清理"
+
+# ============================================
+# 🏥 健康检查配置（Doctor）
+# ============================================
+
+doctor:
+  checks:
+    - name: "任务系统"
+      type: "file_writable"
+      path: "/root/.openclaw/workspace-taizi/data/tasks.json"
+      
+    - name: "Git 仓库"
+      type: "git_repo"
+      path: "/root/.openclaw/workspace/sansheng-github"
+      
+    - name: "看板服务"
+      type: "http_status"
+      url: "http://10.1.0.9:7850"
+      
+    - name: "会话管理"
+      type: "session_count"
+      max_count: 20
+      
+    - name: "GitHub SSH"
+      type: "ssh_key"
+      key_path: "~/.ssh/id_ed25519.pub"
