@@ -53,6 +53,7 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 self.end_headers()
                 with open(TASKS_FILE, 'rb') as f:
                     self.wfile.write(f.read())
@@ -79,6 +80,17 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(302)
             self.send_header('Location', '/index.html')
             self.end_headers()
+        
+        # 对 index.html 添加无缓存头
+        elif parsed.path == '/index.html':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+            file_path = Path(self.directory) / 'index.html'
+            with open(file_path, 'rb') as f:
+                self.wfile.write(f.read())
         
         else:
             super().do_GET()
