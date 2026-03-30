@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>军机处 · 三省六部总控台</title>
-  <meta name="version" content="2026-03-30-v3">
+  <meta name="version" content="2026-03-30-v4">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&display=swap');
     :root{
@@ -24,159 +24,157 @@
     .wrap{max-width:1400px;margin:0 auto;padding:16px}
 
     /* HEADER */
-    .hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-    .logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#6a9eff,#a07aff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .sub{font-size:11px;color:var(--muted)}
+    .hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+    .logo{font-size:24px;font-weight:900;background:linear-gradient(135deg,#6a9eff,#a07aff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:0.05em}
+    .sub{font-size:12px;color:var(--muted);margin-top:4px}
     .hdr-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .chip{font-size:11px;padding:3px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted)}
-    .chip.ok{border-color:#2ecc8a44;color:var(--ok)}.chip.warn{border-color:#f5c84244;color:var(--warn)}.chip.err{border-color:#ff527044;color:var(--danger)}
-    .btn-refresh{font-size:11px;padding:4px 10px;border:1px solid var(--acc);border-radius:6px;background:transparent;color:var(--acc);cursor:pointer}
+    .chip{font-size:11px;padding:4px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted)}
+    .chip.ok{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}.chip.warn{border-color:#f5c84244;color:var(--warn)}.chip.err{border-color:#ff527044;color:var(--danger)}
+    .btn-refresh{font-size:12px;padding:6px 14px;border:1px solid var(--acc);border-radius:8px;background:transparent;color:var(--acc);cursor:pointer;font-weight:600}
     .btn-refresh:hover{background:#0a1228}
-    #cd{font-size:11px;color:var(--muted)}
+    #cd{font-size:12px;color:var(--muted)}
 
     /* TABS */
-    .tabs{display:flex;gap:2px;margin-bottom:18px;border-bottom:1px solid var(--line);overflow-x:auto}
-    .tab{font-size:13px;padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--muted);border:1px solid transparent;border-bottom:none;white-space:nowrap;position:relative;bottom:-1px;transition:all .15s;user-select:none}
+    .tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid var(--line);overflow-x:auto}
+    .tab{font-size:14px;padding:10px 20px;border-radius:8px 8px 0 0;cursor:pointer;color:var(--muted);border:1px solid transparent;border-bottom:none;white-space:nowrap;position:relative;bottom:-1px;transition:all .15s;user-select:none}
     .tab:hover{color:var(--text);background:var(--panel)}
-    .tab.active{color:var(--text);background:var(--panel);border-color:var(--line);font-weight:600}
-    .tbadge{font-size:10px;padding:1px 5px;border-radius:999px;background:#1a2040;color:var(--acc);margin-left:4px}
+    .tab.active{color:var(--text);background:var(--panel);border-color:var(--line);font-weight:700}
+    .tbadge{font-size:10px;padding:2px 6px;border-radius:999px;background:#1a2040;color:var(--acc);margin-left:6px;font-weight:700}
     .panel{display:none}.panel.active{display:block}
 
+    /* ══ STATS BAR - 居中大数字 ══ */
+    .stats-bar{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+    .stat-chip{font-size:13px;padding:10px 20px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--muted);text-align:center;min-width:100px}
+    .stat-chip.active{border-color:var(--acc);color:var(--text);background:linear-gradient(135deg,#0a1228,#0f1a38)}
+    .stat-label{font-size:11px;margin-bottom:4px}
+    .stat-num{font-size:28px;font-weight:900;color:var(--text);display:block}
+    .stat-chip.active .stat-num{color:var(--acc)}
+
     /* ══ 旨意看板 ══ */
-    .edict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
-    .edict-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:border-color .15s,transform .1s,box-shadow .15s}
-    .edict-card:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 4px 20px rgba(106,158,255,.1)}
+    .edict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+    .edict-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;cursor:pointer;transition:border-color .15s,transform .1s,box-shadow .15s}
+    .edict-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 6px 24px rgba(106,158,255,.15)}
     .edict-card.archived{opacity:.85;border-style:solid;pointer-events:auto}
-    .edict-card.archived:hover{opacity:1;border-color:var(--ok)}
+    .edict-card.archived:hover{opacity:1;border-color:var(--ok);box-shadow:0 6px 24px rgba(46,204,138,.15)}
 
-    /* pipeline strip on card */
-    .ec-pipe{display:flex;align-items:center;gap:0;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
-    .ep-node{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 8px;border-radius:6px;flex-shrink:0;min-width:52px}
+    /* pipeline strip - 居中显示 */
+    .ec-pipe{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+    .ep-node{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:8px;flex-shrink:0;min-width:56px}
     .ep-node.done{background:#0a2018}
-    .ep-node.active{background:#0f1a38;border:1px solid var(--acc)}
+    .ep-node.active{background:#0f1a38;border:2px solid var(--acc);box-shadow:0 0 12px rgba(106,158,255,.3)}
     .ep-node.pending{opacity:.3}
-    .ep-icon{font-size:14px}
-    .ep-name{font-size:9px;color:var(--muted);white-space:nowrap}
+    .ep-icon{font-size:18px}
+    .ep-name{font-size:10px;color:var(--muted);white-space:nowrap;font-weight:600}
     .ep-node.done .ep-name{color:var(--ok)}
-    .ep-node.active .ep-name{color:var(--acc);font-weight:700}
-    .ep-arrow{font-size:10px;color:#1c2236;padding:0 1px;flex-shrink:0}
+    .ep-node.active .ep-name{color:var(--acc);font-weight:800}
+    .ep-arrow{font-size:12px;color:#2a3a5a;padding:0 2px;flex-shrink:0}
 
-    .ec-id{font-size:10px;color:var(--acc);font-weight:700;letter-spacing:.04em;margin-bottom:5px}
-    .ec-title{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:10px;color:var(--text)}
-    .ec-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
-    .tag{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid;display:inline-block;white-space:nowrap}
+    .ec-id{font-size:11px;color:var(--acc);font-weight:800;letter-spacing:.06em;margin-bottom:8px;text-align:center}
+    .ec-title{font-size:17px;font-weight:800;line-height:1.4;margin-bottom:12px;color:var(--text);text-align:center}
+    .ec-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:10px}
+    .tag{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid;display:inline-block;white-space:nowrap;font-weight:600}
 
-    /* state colors */
-    .st-Taizi{border-color:#e8a04044;color:#e8a040;background:#281a08}
-    .st-Zhongshu{border-color:#a07aff44;color:#a07aff;background:#110a28}
-    .st-Menxia{border-color:#ff9a6a44;color:#ff9a6a;background:#280f0a}
-    .st-Shangshu{border-color:#6aef9a44;color:#6aef9a;background:#0a2018}
-    .st-Done{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}
-    .st-Cancelled{border-color:#88888844;color:#888;background:#1a1a1a}
+    /* state colors - 更鲜艳 */
+    .st-Taizi{border-color:#e8a040;color:#e8a040;background:#281a08}
+    .st-Zhongshu{border-color:#a07aff;color:#a07aff;background:#110a28}
+    .st-Menxia{border-color:#ff9a6a;color:#ff9a6a;background:#280f0a}
+    .st-Shangshu{border-color:#6aef9a;color:#6aef9a;background:#0a2018}
+    .st-Done{border-color:#2ecc8a;color:#2ecc8a;background:#0a2018}
+    .st-Cancelled{border-color:#888;color:#888;background:#1a1a1a}
 
     /* dept colors */
-    .dt-太子{border-color:#e8a04044;color:#e8a040;background:#281a08}
-    .dt-中书省{border-color:#a07aff44;color:#a07aff;background:#1a0f38}
-    .dt-门下省{border-color:#6a9eff44;color:#6a9eff;background:#0f1a38}
-    .dt-尚书省{border-color:#6aef9a44;color:#6aef9a;background:#0a2018}
-    .dt-完成{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}
+    .dt-太子{border-color:#e8a040;color:#e8a040;background:#281a08}
+    .dt-中书省{border-color:#a07aff;color:#a07aff;background:#1a0f38}
+    .dt-门下省{border-color:#6a9eff;color:#6a9eff;background:#0f1a38}
+    .dt-尚书省{border-color:#6aef9a;color:#6aef9a;background:#0a2018}
+    .dt-完成{border-color:#2ecc8a;color:#2ecc8a;background:#0a2018}
 
-    .ec-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px}
-    .hb{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line)}
-    .hb.active{border-color:#2ecc8a44;color:var(--ok)}.hb.warn{border-color:#f5c84244;color:var(--warn)}.hb.stalled{border-color:#ff527044;color:var(--danger);animation:pulse 1.5s infinite}
+    .ec-footer{display:flex;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap;gap:8px}
+    .hb{font-size:11px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-weight:600}
+    .hb.active{border-color:#2ecc8a44;color:var(--ok);background:#0a2018}.hb.warn{border-color:#f5c84244;color:var(--warn)}.hb.stalled{border-color:#ff527044;color:var(--danger);animation:pulse 1.5s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-    /* ══ 省部调度 ══ */
-    .duty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
-    .duty-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .15s}
-    .duty-card:hover{border-color:#2e3d6a}
-    .duty-card.active-card{border-color:var(--acc)}
+    /* ══ 省部调度 - 大卡片居中 ══ */
+    .duty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+    .duty-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+    .duty-card:hover{border-color:#2e3d6a;box-shadow:0 4px 20px rgba(106,158,255,.1)}
+    .duty-card.active-card{border-color:var(--acc);box-shadow:0 0 20px rgba(106,158,255,.2)}
 
-    .dc-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--panel2);border-bottom:1px solid var(--line)}
-    .dc-emoji{font-size:22px}
-    .dc-info{flex:1}
-    .dc-name{font-size:14px;font-weight:800}
-    .dc-role{font-size:10px;color:var(--muted)}
-    .dc-status{display:flex;align-items:center;gap:5px;font-size:11px}
-    .dc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .dc-hdr{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;background:var(--panel2);border-bottom:1px solid var(--line)}
+    .dc-emoji{font-size:32px}
+    .dc-info{text-align:center}
+    .dc-name{font-size:18px;font-weight:900}
+    .dc-role{font-size:11px;color:var(--muted);margin-top:2px}
+    .dc-status{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;margin-top:8px}
+    .dc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
     .dc-dot.active{background:var(--ok)}.dc-dot.busy{background:var(--warn);animation:pulse 1.5s infinite}.dc-dot.idle{background:#2a3a5a}
 
-    .dc-body{padding:14px 16px}
-    .dc-idle{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;padding:6px 0}
-    .dc-task-id{font-size:10px;color:var(--acc);font-weight:700;letter-spacing:.04em}
-    .dc-task-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.3}
-    .dc-task-now{font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px}
+    .dc-body{padding:18px;text-align:center}
+    .dc-idle{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:14px;padding:10px 0}
+    .dc-task-id{font-size:12px;color:var(--acc);font-weight:800;letter-spacing:.06em;margin-bottom:6px}
+    .dc-task-title{font-size:16px;font-weight:800;color:var(--text);line-height:1.4}
+    .dc-task-now{font-size:13px;color:var(--muted);line-height:1.5;margin-top:6px}
 
-    .dc-footer{padding:8px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;background:var(--panel2)}
-    .dc-model{font-size:10px;color:var(--muted)}.dc-count{font-size:10px;color:var(--acc);margin-left:auto}
+    .dc-footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:16px;background:var(--panel2)}
+    .dc-model{font-size:11px;color:var(--muted)}.dc-count{font-size:12px;color:var(--acc);font-weight:700}
 
-    /* ══ SYSTEM STATUS ══ */
-    .sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-    .sys-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-    .sys-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-    .sys-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+    /* ══ SYSTEM STATUS - 居中大数字 ══ */
+    .sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .sys-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+    .sys-title{font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center}
+    .sys-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
     .sys-row:last-child{border-bottom:none}
-    .sys-label{color:var(--muted)}
-    .sys-value{font-weight:600}
+    .sys-label{color:var(--muted);font-weight:500}
+    .sys-value{font-weight:800;font-size:15px}
     .sys-ok{color:var(--ok)}.sys-warn{color:var(--warn)}.sys-err{color:var(--danger)}
 
-    /* ══ MODAL ══ */
-    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;backdrop-filter:blur(3px);overflow-y:auto}
+    /* ══ MODAL - 更大更醒目 ══ */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:none;backdrop-filter:blur(5px);overflow-y:auto}
     .modal-bg.open{display:flex;align-items:flex-start;justify-content:center;padding:40px 16px}
-    .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:100%;max-width:760px;padding:28px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-    .modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:18px;color:var(--muted)}
+    .modal{background:var(--panel);border:1px solid var(--line);border-radius:20px;width:100%;max-width:800px;padding:32px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+    .modal-close{position:absolute;top:18px;right:18px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:20px;color:var(--muted)}
     .modal-close:hover{background:var(--panel2);color:var(--text)}
-    .modal-id{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.04em;margin-bottom:6px}
-    .modal-title{font-size:22px;font-weight:800;line-height:1.3;margin-bottom:18px}
+    .modal-id{font-size:12px;color:var(--acc);font-weight:800;letter-spacing:.08em;margin-bottom:8px;text-align:center}
+    .modal-title{font-size:26px;font-weight:900;line-height:1.3;margin-bottom:24px;text-align:center}
 
-    /* full pipeline in modal */
-    .m-pipe{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:16px;background:var(--panel2);border-radius:12px;margin-bottom:20px}
+    /* full pipeline in modal - 居中大图标 */
+    .m-pipe{display:flex;align-items:stretch;justify-content:center;gap:0;overflow-x:auto;padding:20px;background:var(--panel2);border-radius:14px;margin-bottom:24px}
     .mp-stage{display:flex;align-items:center;flex-shrink:0}
-    .mp-node{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border-radius:10px;min-width:80px;position:relative}
+    .mp-node{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 18px;border-radius:12px;min-width:90px;position:relative}
     .mp-node.done{background:#0a2018;border:1px solid #2ecc8a44}
-    .mp-node.active{background:#0f1838;border:2px solid var(--acc);box-shadow:0 0 14px rgba(106,158,255,.2)}
+    .mp-node.active{background:#0f1838;border:2px solid var(--acc);box-shadow:0 0 20px rgba(106,158,255,.3)}
     .mp-node.pending{opacity:.25;border:1px dashed var(--line)}
-    .mp-icon{font-size:22px}
-    .mp-dept{font-size:12px;font-weight:700;margin-top:2px}
+    .mp-icon{font-size:28px}
+    .mp-dept{font-size:14px;font-weight:800;margin-top:4px}
     .mp-node.done .mp-dept{color:var(--ok)}
     .mp-node.active .mp-dept{color:var(--acc)}
     .mp-node.pending .mp-dept{color:var(--muted)}
-    .mp-action{font-size:10px;color:var(--muted);margin-top:1px}
-    .mp-arrow{color:#1c2236;font-size:18px;padding:0 6px;margin-top:-10px}
+    .mp-action{font-size:11px;color:var(--muted);margin-top:2px}
+    .mp-arrow{color:#2a3a5a;font-size:22px;padding:0 8px;margin-top:-14px}
 
     /* flow log */
-    .fl-timeline{display:flex;flex-direction:column;gap:0;position:relative;margin-top:18px}
-    .fl-timeline::before{content:'';position:absolute;left:60px;top:0;bottom:0;width:1px;background:var(--line)}
-    .fl-item{display:flex;gap:0;position:relative;padding:8px 0}
-    .fl-time{min-width:60px;font-size:10px;color:var(--muted);text-align:right;padding-right:14px;flex-shrink:0;padding-top:3px}
-    .fl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;position:relative;z-index:1;background:var(--acc)}
-    .fl-content{padding-left:12px;flex:1}
-    .fl-who{font-size:12px;margin-bottom:2px}
-    .fl-who .from{font-weight:700}
-    .fl-who .to{font-weight:700}
-    .fl-rem{font-size:11px;color:var(--muted);line-height:1.5}
+    .fl-timeline{display:flex;flex-direction:column;gap:0;position:relative;margin-top:24px}
+    .fl-timeline::before{content:'';position:absolute;left:70px;top:0;bottom:0;width:1px;background:var(--line)}
+    .fl-item{display:flex;gap:0;position:relative;padding:10px 0}
+    .fl-time{min-width:70px;font-size:11px;color:var(--muted);text-align:right;padding-right:16px;flex-shrink:0;padding-top:4px}
+    .fl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:4px;position:relative;z-index:1;background:var(--acc)}
+    .fl-content{padding-left:14px;flex:1}
+    .fl-who{font-size:13px;margin-bottom:3px}
+    .fl-who .from{font-weight:800}
+    .fl-who .to{font-weight:800}
+    .fl-rem{font-size:12px;color:var(--muted);line-height:1.5}
     .fl-ok{color:var(--ok)}.fl-warn{color:var(--warn)}.fl-blue{color:var(--acc)}
 
-    /* ══ STATS ══ */
-    .stats-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-    .stat-chip{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--muted)}
-    .stat-chip.active{border-color:var(--acc);color:var(--text)}
-    .stat-num{font-weight:700;margin-left:4px}
-
     /* THEME TOGGLE */
-    .theme-toggle{position:fixed;top:16px;right:16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:14px;padding:6px 12px;color:var(--text);z-index:50}
+    .theme-toggle{position:fixed;top:16px;right:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px;padding:8px 14px;color:var(--text);z-index:50;font-weight:600}
     .theme-toggle:hover{background:var(--panel2)}
 
     /* EMPTY */
-    .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
-
-    /* TOAST */
-    #toast{position:fixed;bottom:20px;right:20px;font-size:13px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);box-shadow:0 4px 20px rgba(0,0,0,.4);display:none;z-index:200}
+    .empty{text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
   </style>
 </head>
 <body>
   <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-  <div id="toast"></div>
 
   <div class="wrap">
     <!-- HEADER -->
@@ -192,12 +190,12 @@
       </div>
     </div>
 
-    <!-- STATS BAR -->
+    <!-- STATS BAR - 居中大数字 -->
     <div class="stats-bar" id="statsBar">
-      <span class="stat-chip active">全部 <span class="stat-num" id="statTotal">0</span></span>
-      <span class="stat-chip">进行中 <span class="stat-num" id="statActive">0</span></span>
-      <span class="stat-chip">已完成 <span class="stat-num" id="statDone">0</span></span>
-      <span class="stat-chip">待审议 <span class="stat-num" id="statMenxia">0</span></span>
+      <div class="stat-chip active"><div class="stat-label">全部</div><span class="stat-num" id="statTotal">0</span></div>
+      <div class="stat-chip"><div class="stat-label">进行中</div><span class="stat-num" id="statActive">0</span></div>
+      <div class="stat-chip"><div class="stat-label">已完成</div><span class="stat-num" id="statDone">0</span></div>
+      <div class="stat-chip"><div class="stat-label">待审议</div><span class="stat-num" id="statMenxia">0</span></div>
     </div>
 
     <!-- TABS -->
@@ -253,14 +251,12 @@
     let countdown = 30;
     let theme = 'dark';
 
-    // Theme toggle
     function toggleTheme() {
       theme = theme === 'dark' ? 'light' : 'dark';
       document.documentElement.className = theme;
       document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌙' : '☀️';
     }
 
-    // Tab switching
     function switchTab(name) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -271,7 +267,6 @@
       return {kanban:1,duty:2,system:3,archive:4}[name]||1;
     }
 
-    // Load all data
     async function loadAll() {
       countdown = 30;
       await loadTasks();
@@ -279,7 +274,6 @@
       renderAll();
     }
 
-    // Load tasks
     async function loadTasks() {
       try {
         const res = await fetch('/data/tasks.json?t=' + Date.now());
@@ -291,7 +285,6 @@
       }
     }
 
-    // Load system
     async function loadSystem() {
       try {
         const res = await fetch('http://10.1.0.9:7851/api/system/status?t=' + Date.now());
@@ -302,7 +295,6 @@
       }
     }
 
-    // Render all
     function renderAll() {
       renderStats();
       renderKanban();
@@ -311,7 +303,6 @@
       document.getElementById('kanbanBadge').textContent = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled').length;
     }
 
-    // Stats
     function renderStats() {
       const active = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled').length;
       const done = tasks.filter(t => t.state === 'Done').length;
@@ -322,7 +313,6 @@
       document.getElementById('statMenxia').textContent = menxia;
     }
 
-    // Pipeline strip (for card)
     function renderPipeStrip(task) {
       const stages = ['Taizi','Zhongshu','Menxia','Shangshu','Done'];
       const icons = {Taizi:'👑',Zhongshu:'📜',Menxia:'🔍',Shangshu:'📮',Done:'✅'};
@@ -337,7 +327,6 @@
       return html;
     }
 
-    // Kanban cards
     function renderKanban() {
       const active = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled');
       const grid = document.getElementById('edictGrid');
@@ -356,13 +345,12 @@
           </div>
           <div class="ec-footer">
             <span class="hb active">🟢 活跃</span>
-            <span style="font-size:10px;color:var(--muted)">${formatTime(t.updatedAt)}</span>
+            <span style="font-size:11px;color:var(--muted)">${formatTime(t.updatedAt)}</span>
           </div>
         </div>
       `).join('');
     }
 
-    // Duty panel
     function renderDuty() {
       const depts = {
         taizi: {emoji:'👑',name:'太子',role:'消息分拣'},
@@ -386,10 +374,10 @@
               <div class="dc-info">
                 <div class="dc-name">${d.name}</div>
                 <div class="dc-role">${d.role}</div>
-              </div>
-              <div class="dc-status">
-                <div class="dc-dot ${current ? 'busy' : 'idle'}"></div>
-                <span>${current ? '执行中' : '候命'}</span>
+                <div class="dc-status">
+                  <div class="dc-dot ${current ? 'busy' : 'idle'}"></div>
+                  <span>${current ? '执行中' : '候命'}</span>
+                </div>
               </div>
             </div>
             <div class="dc-body">
@@ -410,7 +398,6 @@
       }).join('');
     }
 
-    // Archive panel
     function renderArchive() {
       const done = tasks.filter(t => t.state === 'Done' || t.state === 'Cancelled');
       const grid = document.getElementById('archiveGrid');
@@ -426,14 +413,13 @@
             <span class="tag st-${t.state}">${t.state}</span>
           </div>
           <div class="ec-footer">
-            <span style="font-size:10px;color:var(--ok)">✅ 已完成</span>
-            <span style="font-size:10px;color:var(--muted)">${formatTime(t.updatedAt)}</span>
+            <span style="font-size:11px;color:var(--ok);font-weight:700">✅ 已完成</span>
+            <span style="font-size:11px;color:var(--muted)">${formatTime(t.updatedAt)}</span>
           </div>
         </div>
       `).join('');
     }
 
-    // System panel
     function renderSystem(data) {
       const grid = document.getElementById('sysGrid');
       grid.innerHTML = `
@@ -460,7 +446,6 @@
       document.getElementById('statusChip').textContent = '● 系统正常';
     }
 
-    // Modal
     function openModal(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
@@ -510,14 +495,12 @@
       `).join('');
     }
 
-    // Utils
     function formatTime(s) {
       if (!s) return '-';
       const d = new Date(s);
       return d.toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     }
 
-    // Countdown
     function tick() {
       countdown--;
       document.getElementById('cd').textContent = `刷新倒计时: ${countdown}s`;
@@ -527,7 +510,6 @@
       }
     }
 
-    // Init
     loadAll();
     setInterval(tick, 1000);
   </script>
