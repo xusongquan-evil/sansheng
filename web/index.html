@@ -165,6 +165,22 @@
     .fl-rem{font-size:12px;color:var(--muted);line-height:1.5}
     .fl-ok{color:var(--ok)}.fl-warn{color:var(--warn)}.fl-blue{color:var(--acc)}
 
+    /* Modal 内标签页 */
+    .modal-tabs{display:flex;gap:4px;margin-top:20px;padding:12px;background:var(--panel2);border-radius:10px;overflow-x:auto}
+    .mtab{font-size:12px;padding:8px 14px;border-radius:6px;cursor:pointer;color:var(--muted);white-space:nowrap;transition:all .15s;font-weight:600}
+    .mtab:hover{color:var(--text);background:var(--panel)}
+    .mtab.active{background:var(--acc);color:#000;font-weight:700}
+    .modal-panels{margin-top:16px}
+    .mpanel{display:none}
+    .mpanel.active{display:block}
+    .dept-content{padding:16px;background:var(--panel2);border-radius:10px;min-height:150px}
+    .dept-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+    .dept-icon{font-size:28px}
+    .dept-name{font-size:16px;font-weight:800}
+    .dept-time{font-size:11px;color:var(--muted);margin-left:auto}
+    .dept-work{font-size:13px;line-height:1.7;color:var(--text);padding:12px;background:var(--panel);border-radius:8px;border-left:3px solid var(--acc)}
+    .dept-work.empty{color:var(--muted);font-style:italic}
+
     /* THEME TOGGLE */
     .theme-toggle{position:fixed;top:16px;right:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:16px;padding:8px 14px;color:var(--text);z-index:50;font-weight:600}
     .theme-toggle:hover{background:var(--panel2)}
@@ -242,7 +258,34 @@
       <div class="modal-id" id="mId"></div>
       <div class="modal-title" id="mTitle"></div>
       <div class="m-pipe" id="mPipe"></div>
-      <div class="fl-timeline" id="mFlow"></div>
+      
+      <!-- Modal 内的标签页 -->
+      <div class="modal-tabs" id="modalTabs">
+        <div class="mtab active" onclick="switchModalTab('overview')">📋 概览</div>
+        <div class="mtab" onclick="switchModalTab('taizi')">👑 太子</div>
+        <div class="mtab" onclick="switchModalTab('zhongshu')">📜 中书省</div>
+        <div class="mtab" onclick="switchModalTab('menxia')">🔍 门下省</div>
+        <div class="mtab" onclick="switchModalTab('shangshu')">📮 尚书省</div>
+      </div>
+      
+      <!-- 标签页内容 -->
+      <div class="modal-panels">
+        <div class="mpanel active" id="mpanel-overview">
+          <div class="fl-timeline" id="mFlow"></div>
+        </div>
+        <div class="mpanel" id="mpanel-taizi">
+          <div class="dept-content" id="mTaizi"></div>
+        </div>
+        <div class="mpanel" id="mpanel-zhongshu">
+          <div class="dept-content" id="mZhongshu"></div>
+        </div>
+        <div class="mpanel" id="mpanel-menxia">
+          <div class="dept-content" id="mMenxia"></div>
+        </div>
+        <div class="mpanel" id="mpanel-shangshu">
+          <div class="dept-content" id="mShangshu"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -479,11 +522,79 @@
       document.getElementById('mTitle').textContent = task.title;
       document.getElementById('mPipe').innerHTML = renderFullPipe(task);
       document.getElementById('mFlow').innerHTML = renderFlowLog(task);
+      
+      // 渲染各部门内容
+      renderDeptContent(task);
+      
+      // 重置到概览标签页
+      switchModalTab('overview');
+      
       document.getElementById('modalBg').classList.add('open');
     }
 
     function closeModal() {
       document.getElementById('modalBg').classList.remove('open');
+    }
+
+    // Modal 内标签页切换
+    function switchModalTab(name) {
+      document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mpanel').forEach(p => p.classList.remove('active'));
+      document.querySelector(`.mtab:nth-child(${getModalTabIndex(name)})`).classList.add('active');
+      document.getElementById(`mpanel-${name}`).classList.add('active');
+    }
+    
+    function getModalTabIndex(name) {
+      return {overview:1,taizi:2,zhongshu:3,menxia:4,shangshu:5}[name]||1;
+    }
+    
+    // 渲染各部门内容
+    function renderDeptContent(task) {
+      const flowLog = task.flow_log || [];
+      
+      // 太子内容
+      const taiziLog = flowLog.find(l => l.from === '太子' || l.to === '太子');
+      document.getElementById('mTaizi').innerHTML = taiziLog ? `
+        <div class="dept-header">
+          <div class="dept-icon">👑</div>
+          <div class="dept-name">太子 · 消息分拣</div>
+          <div class="dept-time">${formatTime(taiziLog.at)}</div>
+        </div>
+        <div class="dept-work">${taiziLog.remark}</div>
+      ` : '<div class="dept-work empty">暂无太子工作记录</div>';
+      
+      // 中书省内容
+      const zhongshuLog = flowLog.find(l => l.from === '中书省');
+      document.getElementById('mZhongshu').innerHTML = zhongshuLog ? `
+        <div class="dept-header">
+          <div class="dept-icon">📜</div>
+          <div class="dept-name">中书省 · 方案规划</div>
+          <div class="dept-time">${formatTime(zhongshuLog.at)}</div>
+        </div>
+        <div class="dept-work">${zhongshuLog.remark}</div>
+      ` : '<div class="dept-work empty">暂无中书省工作记录</div>';
+      
+      // 门下省内容
+      const menxiaLog = flowLog.find(l => l.from === '门下省');
+      document.getElementById('mMenxia').innerHTML = menxiaLog ? `
+        <div class="dept-header">
+          <div class="dept-icon">🔍</div>
+          <div class="dept-name">门下省 · 审议封驳</div>
+          <div class="dept-time">${formatTime(menxiaLog.at)}</div>
+        </div>
+        <div class="dept-work">${menxiaLog.remark}</div>
+      ` : '<div class="dept-work empty">暂无门下省工作记录</div>';
+      
+      // 尚书省内容
+      const shangshuLog = flowLog.find(l => l.from === '尚书省');
+      document.getElementById('mShangshu').innerHTML = shangshuLog ? `
+        <div class="dept-header">
+          <div class="dept-icon">📮</div>
+          <div class="dept-name">尚书省 · 执行回奏</div>
+          <div class="dept-time">${formatTime(shangshuLog.at)}</div>
+        </div>
+        <div class="dept-work">${shangshuLog.remark}</div>
+      ` : '<div class="dept-work empty">暂无尚书省工作记录</div>';
     }
 
     function renderFullPipe(task) {
