@@ -192,10 +192,10 @@
 
     <!-- STATS BAR - 居中大数字 -->
     <div class="stats-bar" id="statsBar">
-      <div class="stat-chip active"><div class="stat-label">全部</div><span class="stat-num" id="statTotal">0</span></div>
-      <div class="stat-chip"><div class="stat-label">进行中</div><span class="stat-num" id="statActive">0</span></div>
-      <div class="stat-chip"><div class="stat-label">已完成</div><span class="stat-num" id="statDone">0</span></div>
-      <div class="stat-chip"><div class="stat-label">待审议</div><span class="stat-num" id="statMenxia">0</span></div>
+      <div class="stat-chip active" onclick="filterByStatus('all')" style="cursor:pointer"><div class="stat-label">全部</div><span class="stat-num" id="statTotal">0</span></div>
+      <div class="stat-chip" onclick="filterByStatus('active')" style="cursor:pointer"><div class="stat-label">进行中</div><span class="stat-num" id="statActive">0</span></div>
+      <div class="stat-chip" onclick="filterByStatus('done')" style="cursor:pointer"><div class="stat-label">已完成</div><span class="stat-num" id="statDone">0</span></div>
+      <div class="stat-chip" onclick="filterByStatus('menxia')" style="cursor:pointer"><div class="stat-label">待审议</div><span class="stat-num" id="statMenxia">0</span></div>
     </div>
 
     <!-- TABS -->
@@ -250,6 +250,7 @@
     let tasks = [];
     let countdown = 30;
     let theme = 'dark';
+    let currentFilter = 'all';
 
     function toggleTheme() {
       theme = theme === 'dark' ? 'light' : 'dark';
@@ -265,6 +266,21 @@
     }
     function getTabIndex(name) {
       return {kanban:1,duty:2,system:3,archive:4}[name]||1;
+    }
+
+    // 过滤功能
+    function filterByStatus(status) {
+      currentFilter = status;
+      // 更新选中状态
+      document.querySelectorAll('.stat-chip').forEach(c => c.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      // 根据过滤跳转到对应 Tab
+      if (status === 'done') {
+        switchTab('archive');
+      } else {
+        switchTab('kanban');
+        renderKanban();
+      }
     }
 
     async function loadAll() {
@@ -328,13 +344,23 @@
     }
 
     function renderKanban() {
-      const active = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled');
+      let filtered = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled');
+      
+      // 应用过滤
+      if (currentFilter === 'active') {
+        filtered = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled');
+      } else if (currentFilter === 'menxia') {
+        filtered = tasks.filter(t => t.state === 'Menxia');
+      } else if (currentFilter === 'all') {
+        filtered = tasks.filter(t => t.state !== 'Done' && t.state !== 'Cancelled');
+      }
+      
       const grid = document.getElementById('edictGrid');
-      if (active.length === 0) {
-        grid.innerHTML = '<div class="empty">暂无进行中的旨意</div>';
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty">暂无匹配的旨意</div>';
         return;
       }
-      grid.innerHTML = active.map(t => `
+      grid.innerHTML = filtered.map(t => `
         <div class="edict-card" onclick="openModal('${t.id}')">
           <div class="ec-pipe">${renderPipeStrip(t)}</div>
           <div class="ec-id">${t.id}</div>
